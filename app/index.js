@@ -2,49 +2,31 @@
 var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
+var chalk = require('chalk');
 
+var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
 
-var ExpressComponentGenerator = module.exports = function ExpressComponentGenerator(args, options, config) {
-  yeoman.generators.Base.apply(this, arguments);
+  info: function() {
+    if (!this.options['skip-message']) {
+      console.log(chalk.magenta('Express goodies brought to you by generator-express-component.\n'));
+      console.log(chalk.magenta('Initializing yo-rc.json configuration.\n'));
+    }
+  },
 
-  this.on('end', function () {
-    this.installDependencies({ skipInstall: options['skip-install'] });
-  });
+  saveConfig: function() {
+    this.config.defaults({
+      'insertRoutes': this.options.insertRoutes || true,
+      'registerRoutesFile': this.options.registerRoutesFile || 'server/routes.js',
+      'routesNeedle': this.options.routesNeedle || '// Insert routes below',
 
-  this.pkg = JSON.parse(this.readFileAsString(path.join(__dirname, '../package.json')));
-};
+      'routesBase': this.options.routesBase || '/api/',
+      'pluralizeRoutes': this.options.pluralizeRoutes || true,
 
-util.inherits(ExpressComponentGenerator, yeoman.generators.Base);
+      'insertSockets': this.options.insertSockets || true,
+      'registerSocketsFile': this.options.registerSocketsFile || 'server/config/socketio.js',
+      'socketsNeedle': this.options.socketsNeedle || '// Insert sockets below',
 
-ExpressComponentGenerator.prototype.askFor = function askFor() {
-  var cb = this.async();
-
-  // have Yeoman greet the user.
-  console.log(this.yeoman);
-
-  var prompts = [{
-    type: 'confirm',
-    name: 'someOption',
-    message: 'Would you like to enable this option?',
-    default: true
-  }];
-
-  this.prompt(prompts, function (props) {
-    this.someOption = props.someOption;
-
-    cb();
-  }.bind(this));
-};
-
-ExpressComponentGenerator.prototype.app = function app() {
-  this.mkdir('app');
-  this.mkdir('app/templates');
-
-  this.copy('_package.json', 'package.json');
-  this.copy('_bower.json', 'bower.json');
-};
-
-ExpressComponentGenerator.prototype.projectfiles = function projectfiles() {
-  this.copy('editorconfig', '.editorconfig');
-  this.copy('jshintrc', '.jshintrc');
-};
+      'filters': this.options.filters || ['socketio']
+    });
+  }
+});
