@@ -3,30 +3,94 @@ var util = require('util');
 var path = require('path');
 var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
+var defaults;
 
 var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
 
-  info: function() {
+  initializing: function() {
     if (!this.options['skip-message']) {
       console.log(chalk.magenta('Express goodies brought to you by generator-express-component.\n'));
-      console.log(chalk.magenta('Initializing yo-rc.json configuration.\n'));
+    }
+
+    defaults = {
+      endpoint: {
+        route: 'server/api/<%= name %>/index.js',
+        registerRoute: 'server/routes.js',
+        routesNeedle: '// Insert routes below',
+        controller: 'server/api/<%= name %>/<%= name %>.controller.js',
+        routeUrl: '/api/<%= name %>',
+        pluralizeRoutes: true,
+
+        socket: 'server/api/<%= name %>/<%= name %>.socket.js',
+        insertSockets: 'server/config/socketio.js',
+        socketsNeedle: '// Insert sockets below'
+      }
+    };
+  },
+
+  prompting: {
+    endpoint: function() {
+      var cb = this.async();
+      var ops = this.options;
+
+      var prompts = [{
+        name: 'route',
+        message: 'What path should be used for endpoint routes'
+      }, {
+        name: 'registerRoute',
+        message: 'What file should your endpoint routes be registered in'
+      }, {
+        name: 'routesNeedle',
+        message: 'What will be the insert point for registering routes'
+      }, {
+        name: 'controller',
+        message: 'What path should be used for endpoint controllers'
+      }, {
+        name: 'routeUrl',
+        message: 'What url should be used for endpoints'
+      }, {
+        type: 'confirm',
+        name: 'pluralizeRoutes',
+        message: 'Should endpoint names be pluralized'
+      }, {
+        name: 'socket',
+        message: 'What path should be used for endpoint sockets'
+      }, {
+        name: 'insertSockets',
+        message: 'What file should your endpoint sockets be registered in'
+      }, {
+        name: 'socketsNeedle',
+        message: 'What will be the insert point for registering sockets'
+      }];
+
+      /* Set prompt defaults and when conditions */
+      for (var i = 0, promptsLength = prompts.length; i < promptsLength; i++) {
+        var prompt = prompts[i];
+        prompt.default = defaults.endpoint[prompt.name];
+        if (!prompt.hasOwnProperty('type')) {
+          prompt.type = 'input';
+        }
+        if (!prompt.hasOwnProperty('when')) {
+          prompt.when = (!ops.endpoint || !ops.endpoint[prompt.name]);
+        }
+      }
+
+      this.prompt(prompts, function(answers) {
+        this.options.endpoint = answers;
+        cb();
+      }.bind(this));
     }
   },
 
-  saveConfig: function() {
-    this.config.defaults({
-      'insertRoutes': this.options.insertRoutes || true,
-      'registerRoutesFile': this.options.registerRoutesFile || 'server/routes.js',
-      'routesNeedle': this.options.routesNeedle || '// Insert routes below',
+  configuring: {
+    saveConfig: function() {
+      if (!this.options['skip-message']) {
+        console.log(chalk.magenta('Initializing yo-rc.json configuration.\n'));
+      }
 
-      'routesBase': this.options.routesBase || '/api/',
-      'pluralizeRoutes': this.options.pluralizeRoutes || true,
-
-      'insertSockets': this.options.insertSockets || true,
-      'registerSocketsFile': this.options.registerSocketsFile || 'server/config/socketio.js',
-      'socketsNeedle': this.options.socketsNeedle || '// Insert sockets below',
-
-      'filters': this.options.filters || ['socketio']
-    });
+      this.config.defaults({
+        endpoint: this.options.endpoint
+      });
+    }
   }
 });

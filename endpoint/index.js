@@ -1,10 +1,15 @@
 'use strict';
 var path = require('path');
 var util = require('util');
+var yeoman = require('yeoman-generator');
 var yoUtils = require('yo-utils');
 
 
-var EndpointGenerator = module.exports = yoUtils.base.extend({
+var EndpointGenerator = yoUtils.NamedBase.extend({
+
+  constructor: function() {
+    yoUtils.NamedBase.apply(this, arguments);
+  },
 
   /* Prompting priority methods */
   prompting: {
@@ -27,7 +32,8 @@ var EndpointGenerator = module.exports = yoUtils.base.extend({
           name: 'route',
           message: 'What will the url of your endpoint to be?',
           default: base + name
-        }
+        },
+
       ];
 
       this.prompt(prompts, function (props) {
@@ -56,17 +62,15 @@ var EndpointGenerator = module.exports = yoUtils.base.extend({
         yoUtils.templating.rewriteFile(routeConfig);
       }
 
-      if (this.filters.socketio) {
-        if(this.config.get('insertSockets')) {
-          var socketConfig = {
-            file: this.config.get('registerSocketsFile'),
-            needle: this.config.get('socketsNeedle'),
-            splicable: [
-              "require(\'../api/" + this.name + '/' + this.name + ".socket\').register(socket);"
-            ]
-          };
-          yoUtils.templating.rewriteFile(socketConfig);
-        }
+      if(this.filters.socketio && this.config.get('insertSockets')) {
+        var socketConfig = {
+          file: this.config.get('registerSocketsFile'),
+          needle: this.config.get('socketsNeedle'),
+          splicable: [
+            "require(\'../api/" + this.name + '/' + this.name + ".socket\').register(socket);"
+          ]
+        };
+        yoUtils.templating.rewriteFile(socketConfig);
       }
     },
 
@@ -79,3 +83,5 @@ var EndpointGenerator = module.exports = yoUtils.base.extend({
   }
 
 });
+
+module.exports = EndpointGenerator;
