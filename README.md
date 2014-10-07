@@ -1,4 +1,5 @@
 # generator-express-component [![Build Status](https://secure.travis-ci.org/kingcody/generator-express-component.png?branch=master)](https://travis-ci.org/kingcody/generator-express-component)
+[![Gitter](https://badges.gitter.im/Join Chat.svg)](https://gitter.im/yo-components/generator-express-component?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Generate various express components for [Yeoman](http://yeoman.io) generated apps.
 
