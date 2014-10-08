@@ -14,16 +14,16 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
 
     defaults = {
       endpoint: {
-        route: 'server/api/<%= name %>/index.js',
-        registerRoute: 'server/routes.js',
-        routesNeedle: '// Insert routes below',
-        controller: 'server/api/<%= name %>/<%= name %>.controller.js',
-        routeUrl: '/api/<%= name %>',
-        pluralizeRoutes: true,
+        'route': 'server/api/<%= name %>/index.js',
+        'register-route': 'server/routes.js',
+        'routes-needle': '// Insert routes below',
+        'controller': 'server/api/<%= name %>/<%= name %>.controller.js',
+        'route-url': '/api/<%= name %>',
+        'pluralize-routes': true,
 
-        socket: 'server/api/<%= name %>/<%= name %>.socket.js',
-        insertSockets: 'server/config/socketio.js',
-        socketsNeedle: '// Insert sockets below'
+        'socket': 'server/api/<%= name %>/<%= name %>.socket.js',
+        'insert-sockets': 'server/config/socketio.js',
+        'sockets-needle': '// Insert sockets below'
       }
     };
   },
@@ -37,29 +37,29 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
         name: 'route',
         message: 'What path should be used for endpoint routes'
       }, {
-        name: 'registerRoute',
+        name: 'register-route',
         message: 'What file should your endpoint routes be registered in'
       }, {
-        name: 'routesNeedle',
+        name: 'routes-needle',
         message: 'What will be the insert point for registering routes'
       }, {
         name: 'controller',
         message: 'What path should be used for endpoint controllers'
       }, {
-        name: 'routeUrl',
+        name: 'route-url',
         message: 'What url should be used for endpoints'
       }, {
         type: 'confirm',
-        name: 'pluralizeRoutes',
+        name: 'pluralize-routes',
         message: 'Should endpoint names be pluralized'
       }, {
         name: 'socket',
         message: 'What path should be used for endpoint sockets'
       }, {
-        name: 'insertSockets',
+        name: 'insert-sockets',
         message: 'What file should your endpoint sockets be registered in'
       }, {
-        name: 'socketsNeedle',
+        name: 'sockets-needle',
         message: 'What will be the insert point for registering sockets'
       }];
 
@@ -71,12 +71,17 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
           prompt.type = 'input';
         }
         if (!prompt.hasOwnProperty('when')) {
-          prompt.when = (!ops.endpoint || !ops.endpoint[prompt.name]);
+          prompt.when = (function(op) {
+            return function(answers) {
+              answers[op] = ops['endpoint-' + op];
+              return ops.endpoint !== false && typeof answers[op] === 'undefined';
+            };
+          })(prompt.name);
         }
       }
 
       this.prompt(prompts, function(answers) {
-        this.options.endpoint = answers;
+        this.endpointConfig = this._.assign(defaults.endpoint, answers);
         cb();
       }.bind(this));
     }
@@ -89,7 +94,7 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
       }
 
       this.config.defaults({
-        endpoint: this.options.endpoint
+        endpoint: this.endpointConfig
       });
     }
   }
