@@ -3,6 +3,9 @@ var path = require('path');
 var util = require('util');
 var yeoman = require('yeoman-generator');
 var yoUtils = require('yo-utils');
+var chalk = require('chalk');
+var endpointCfg = require('./config');
+var defaults;
 
 
 var EndpointGenerator = yoUtils.NamedBase.extend({
@@ -11,8 +14,70 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
     yoUtils.NamedBase.apply(this, arguments);
   },
 
+  /* Init method */
+  initializing: function() {
+    if (!this.options['skip-message']) {
+      console.log(chalk.magenta('Express endpoints brought to you by generator-express-component.\n'));
+    }
+    // instance options
+    this.instanceOps = {};
+
+    // prompt defaults
+    defaults = {
+      endpoint: endpointCfg.defaults
+    };
+  },
+
   /* Prompting priority methods */
   prompting: {
+    subGenCfg: function() {
+      var cb = this.async();
+      var ops = this.options;
+      var cfg = this.config;
+
+      var prompts = endpointCfg.prompts(when, whenRoute, whenSocket);
+
+      /* Set prompt defaults */
+      for (var i = 0, promptsLength = prompts.length; i < promptsLength; i++) {
+        var prompt = prompts[i];
+        prompt.default = defaults.endpoint[prompt.name];
+      }
+
+      this.prompt(prompts, function(answers) {
+        this.endpointConfig = answers;
+        cb();
+      }.bind(this));
+
+
+      /* when */
+      function when(op) {
+        return function(answers) {
+          answers[op] = opsCfg(ops, op);
+          return typeof answers[op] === 'undefined';
+        }
+      }
+
+      /* whenRoute */
+      function whenRoute(op) {
+        return function(answers) {
+          return when(op)(answers) && opsCfg(ops, 'route') !== false;
+        }
+      }
+
+      /* whenSocket */
+      function whenSocket(op) {
+        return function(answers) {
+          return when(op)(answers) && opsCfg(ops, 'socket') !== false;
+        }
+      }
+
+      /* ops or cfg */
+      function opsCfg(ops, op) {
+        return (typeof ops['endpoint-' + op] !== 'undefined') ?
+          ops['endpoint-' + op] : cfg.get('endpoint')[op];
+      }
+    },
+
     askForUrl: function() {
       var done = this.async();
       var name = this.name;
