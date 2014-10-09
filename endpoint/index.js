@@ -34,17 +34,25 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
       var cb = this.async();
       var ops = this.options;
       var cfg = this.config;
+      var urlIndex;
 
       var prompts = endpointCfg.prompts(when, whenRoute, whenSocket);
 
-      /* Set prompt defaults */
+      /* Set prompt defaults and flag route-url prompt */
       for (var i = 0, promptsLength = prompts.length; i < promptsLength; i++) {
         var prompt = prompts[i];
-        prompt.default = defaults.endpoint[prompt.name];
+        if (prompt.name === 'route-url') {
+          urlIndex = i;
+        } else {
+          prompt.default = defaults.endpoint[prompt.name];
+        }
       }
 
+      // remove prompt for route-url, will be handled below
+      prompts.splice(urlIndex, 1);
+
       this.prompt(prompts, function(answers) {
-        this.endpointConfig = answers;
+        this.instanceOps = answers;
         cb();
       }.bind(this));
 
@@ -73,30 +81,35 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
 
       /* ops or cfg */
       function opsCfg(ops, op) {
+        var cfgVal = (typeof cfg.get('endpoint') !== 'undefined') ?
+          cfg.get('endpoint')[op] : undefined;
         return (typeof ops['endpoint-' + op] !== 'undefined') ?
-          ops['endpoint-' + op] : cfg.get('endpoint')[op];
+          ops['endpoint-' + op] : cfgVal;
       }
     },
 
     askForUrl: function() {
       var done = this.async();
       var name = this.name;
+      var cfg = this.config.get('endpoint');
+      var url;
 
-      var base = this.config.get('routesBase') || '/api/';
-      if(base.charAt(base.length-1) !== '/') {
-        base = base + '/';
+      if (cfg && cfg['route-url']) {
+        url = cfg['route-url'];
+      } else {
+        url = defaults.endpoint['route-url'];
       }
 
       // pluralization defaults to true for backwards compat
-      if (this.config.get('pluralizeRoutes') !== false) {
+      if (this.instanceOps['pluralize-routes'] !== false) {
         name = name + 's';
       }
 
       var prompts = [
         {
           name: 'route',
-          message: 'What will the url of your endpoint to be?',
-          default: base + name
+          message: 'What will the url of your endpoint be?',
+          default: this.engine(url, {name: name})
         },
 
       ];
