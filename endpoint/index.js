@@ -4,6 +4,7 @@ var util = require('util');
 var yeoman = require('yeoman-generator');
 var yoUtils = require('yo-utils');
 var chalk = require('chalk');
+var pluralize = require('pluralize');
 var endpointCfg = require('./config');
 var defaults;
 
@@ -102,7 +103,7 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
 
       // pluralization defaults to true for backwards compat
       if (this.instanceOps['pluralize-routes'] !== false) {
-        name = name + 's';
+        name = pluralize.plural(name);
       }
 
       var prompts = [
