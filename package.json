@@ -5,8 +5,8 @@
   "keywords": [
     "yeoman-generator"
   ],
-  "homepage": "https://github.com/kingcody/generator-express-component",
-  "bugs": "https://github.com/kingcody/generator-express-component/issues",
+  "homepage": "https://github.com/yo-components/generator-express-component",
+  "bugs": "https://github.com/yo-components/generator-express-component/issues",
   "author": {
     "name": "Cody Mize",
     "email": "me@codymize.com",
@@ -15,7 +15,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kingcody/generator-express-component.git"
+    "url": "git://github.com/yo-components/generator-express-component.git"
   },
   "scripts": {
     "test": "mocha"
