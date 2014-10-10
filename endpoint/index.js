@@ -23,6 +23,9 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
     // instance options
     this.instanceOps = {};
 
+    // private properties
+    this.trimReqFile = /((\/|\\)index\.js|\.js)$/;
+
     // prompt defaults
     defaults = {
       endpoint: endpointCfg.defaults
@@ -37,7 +40,7 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
       var cfg = this.config;
       var urlIndex;
 
-      var prompts = endpointCfg.prompts(when, whenRoute, whenSocket);
+      var prompts = endpointCfg.prompts(when, whenRoute);
 
       /* Set prompt defaults and flag route-url prompt */
       for (var i = 0, promptsLength = prompts.length; i < promptsLength; i++) {
@@ -73,13 +76,6 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
         }
       }
 
-      /* whenSocket */
-      function whenSocket(op) {
-        return function(answers) {
-          return when(op)(answers) && opsCfg(ops, 'socket') !== false;
-        }
-      }
-
       /* ops or cfg */
       function opsCfg(ops, op) {
         var cfgVal = (typeof cfg.get('endpoint') !== 'undefined') ?
@@ -89,9 +85,10 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
       }
     },
 
-    askForUrl: function() {
+    instancePrompts: function() {
       var done = this.async();
       var name = this.name;
+      var ops = this.options;
       var cfg = this.config.get('endpoint');
       var url;
 
@@ -106,23 +103,46 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
         name = pluralize.plural(name);
       }
 
-      var prompts = [
-        {
-          name: 'route',
-          message: 'What will the url of your endpoint be?',
-          default: this.engine(url, {name: name})
-        },
+      var prompts = [{
+        name: 'type',
+        message: 'What type of endpoint will this be?',
+        type: 'list',
+        choices: ['Basic', 'CRUD'],
+        when: whenNotOpt('type')
+      }, {
+        name: 'route',
+        message: 'What will the url of your endpoint be?',
+        default: this.engine(url, {name: name}),
+        when: whenNotOpt('route')
+      }];
 
-      ];
-
-      this.prompt(prompts, function (props) {
-        if(props.route.charAt(0) !== '/') {
-          props.route = '/' + props.route;
+      this.prompt(prompts, function (answers) {
+        if(answers.route.charAt(0) !== '/') {
+          answers.route = '/' + answers.route;
         }
-
-        this.route = props.route;
+        this.endpointType = answers.type
+        this.route = answers.route;
         done();
       }.bind(this));
+
+      /* whenNotOpt */
+      function whenNotOpt(op) {
+        return function(answers) {
+          answers[op] = ops['endpoint-' + op];
+          return typeof answers[op] === 'undefined';
+        }
+      }
+    }
+  },
+
+  configuring: {
+    templatePaths: function() {
+      for (var op in this.instanceOps) {
+        var opVal = this.instanceOps[op];
+        if (typeof opVal === 'string') {
+          this.instanceOps[op] = this.engine(opVal, {name: this.name});
+        }
+      }
     }
   },
 
@@ -130,34 +150,40 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
   writing: {
     // add route and socket endpoint to main express app
     registerEndpoint: function() {
-      if(this.config.get('insertRoutes')) {
+      var regRouteFile = this.instanceOps['register-route'];
+      if (regRouteFile) {
+        var regRoutePath = regRouteFile.replace(path.basename(regRouteFile), '');
+        var routeFile = this.instanceOps.route;
+        var relativeRoute = path.relative(regRoutePath, routeFile)
+          .replace(this.trimReqFile,'');
         var routeConfig = {
-          file: this.config.get('registerRoutesFile'),
-          needle: this.config.get('routesNeedle'),
+          file: regRouteFile,
+          needle: this.instanceOps['routes-needle'],
           splicable: [
-            "app.use(\'" + this.route +"\', require(\'./api/" + this.name + "\'));"
+            "app.use(\'" + this.route +"\', require(\'./" + relativeRoute + "\'));"
           ]
         };
         yoUtils.templating.rewriteFile(routeConfig);
-      }
-
-      if(this.filters.socketio && this.config.get('insertSockets')) {
-        var socketConfig = {
-          file: this.config.get('registerSocketsFile'),
-          needle: this.config.get('socketsNeedle'),
-          splicable: [
-            "require(\'../api/" + this.name + '/' + this.name + ".socket\').register(socket);"
-          ]
-        };
-        yoUtils.templating.rewriteFile(socketConfig);
       }
     },
 
     // add new endpoint files
     createFiles: function() {
-      var dest = this.config.get('endpointDirectory') || 'server/api/' + this.name;
-      this.sourceRoot(path.join(__dirname, './templates'));
-      yoUtils.templating.processDirectory(this, '.', dest);
+      var tPath = path.join(__dirname, './templates') + '/';
+      var routeFile = this.instanceOps.route;
+      var ctrlFile = this.instanceOps.controller;
+
+      if (routeFile) {
+        if (ctrlFile) {
+          var routePath = routeFile.replace(path.basename(routeFile), '');
+          this.relativeCtrlPath = './' + path.relative(routePath, ctrlFile)
+            .replace(this.trimReqFile, '');
+        }
+        this.template(tPath + 'route.js', routeFile, this);
+      }
+      if (ctrlFile) {
+        this.template(tPath + 'controller.js', ctrlFile, this);
+      }
     }
   }
 

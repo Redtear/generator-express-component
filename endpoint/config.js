@@ -7,15 +7,11 @@ module.exports.defaults = {
   'routes-needle': '// Insert routes below',
   'controller': 'server/api/<%= name %>/<%= name %>.controller.js',
   'route-url': '/api/<%= name %>',
-  'pluralize-routes': true,
-
-  'socket': 'server/api/<%= name %>/<%= name %>.socket.js',
-  'insert-sockets': 'server/config/socketio.js',
-  'sockets-needle': '// Insert sockets below'
+  'pluralize-routes': true
 };
 
 /* Endpoint config prompts */
-module.exports.prompts = function(when, whenRoute, whenSocket) {
+module.exports.prompts = function(when, whenRoute) {
   return [{
     name: 'route',
     message: 'What path should be used for endpoint routes',
@@ -41,17 +37,5 @@ module.exports.prompts = function(when, whenRoute, whenSocket) {
     name: 'pluralize-routes',
     message: 'Should endpoint names be pluralized',
     when: whenRoute('pluralize-routes')
-  }, {
-    name: 'socket',
-    message: 'What path should be used for endpoint sockets',
-    when: when('socket')
-  }, {
-    name: 'insert-sockets',
-    message: 'What file should your endpoint sockets be registered in',
-    when: whenSocket('insert-sockets')
-  }, {
-    name: 'sockets-needle',
-    message: 'What will be the insert point for registering sockets',
-    when: whenSocket('sockets-needle')
   }];
 };
