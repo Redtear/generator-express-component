@@ -23,7 +23,7 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
       var cb = this.async();
       var ops = this.options;
 
-      var prompts = endpointCfg.prompts(when, whenRoute, whenSocket);
+      var prompts = endpointCfg.prompts(when, whenRoute);
 
       /* Set prompt defaults */
       for (var i = 0, promptsLength = prompts.length; i < promptsLength; i++) {
@@ -49,13 +49,6 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
       function whenRoute(op) {
         return function(answers) {
           return when(op)(answers) && ops['endpoint-route'] !== false;
-        }
-      }
-
-      /* whenSocket */
-      function whenSocket(op) {
-        return function(answers) {
-          return when(op)(answers) && ops['endpoint-socket'] !== false;
         }
       }
     }
