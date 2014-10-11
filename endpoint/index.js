@@ -120,7 +120,7 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
         if(answers.route.charAt(0) !== '/') {
           answers.route = '/' + answers.route;
         }
-        this.endpointType = answers.type
+        this.endpointType = answers.type.toLowerCase();
         this.route = answers.route;
         done();
       }.bind(this));

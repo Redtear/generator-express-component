@@ -5,7 +5,7 @@ var controller = require('<%= relativeCtrlPath %>');<% } %>
 
 var router = express.Router();<% if (relativeCtrlPath) { %>
 
-router.get('/', controller.index);<% if(endpointType.toLowerCase() === 'crud') { %>
+router.get('/', controller.index);<% if(endpointType === 'crud') { %>
 router.get('/:id', controller.show);
 router.post('/', controller.create);
 router.put('/:id', controller.update);

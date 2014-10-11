@@ -3,7 +3,7 @@
 // Gets list of <%= name %>s.
 exports.index = function(req, res) {
   // res.json(<%= name %>s)
-};<% if(endpointType === 'CRUD') { %>
+};<% if(endpointType === 'crud') { %>
 
 // Gets a single <%= name %>.
 exports.show = function(req, res) {
