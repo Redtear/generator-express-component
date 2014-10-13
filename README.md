@@ -22,7 +22,7 @@ $ npm install -g generator-express-component
 
 ### Initialize the generator:
 
-In you application folder run the following:
+In your application folder run the following:
 
 ```
 $ yo express-component
