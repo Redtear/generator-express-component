@@ -1,7 +1,7 @@
 {
   "name": "generator-express-component",
   "version": "0.0.1",
-  "description": "A generator for Yeoman",
+  "description": "An express component generator for Yeoman",
   "keywords": [
     "yeoman-generator"
   ],
@@ -22,7 +22,6 @@
   },
   "dependencies": {
     "chalk": "^0.5.1",
-    "pluralize": "^1.0.2",
     "yeoman-generator": "~0.17.0",
     "yo-utils": "0.0.2"
   },
