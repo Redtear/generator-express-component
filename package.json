@@ -1,12 +1,12 @@
 {
   "name": "generator-express-component",
-  "version": "0.0.1",
-  "description": "A generator for Yeoman",
+  "version": "0.0.2",
+  "description": "An express component generator for Yeoman",
   "keywords": [
     "yeoman-generator"
   ],
-  "homepage": "https://github.com/kingcody/generator-express-component",
-  "bugs": "https://github.com/kingcody/generator-express-component/issues",
+  "homepage": "https://github.com/yo-components/generator-express-component",
+  "bugs": "https://github.com/yo-components/generator-express-component/issues",
   "author": {
     "name": "Cody Mize",
     "email": "me@codymize.com",
@@ -15,7 +15,7 @@
   "main": "app/index.js",
   "repository": {
     "type": "git",
-    "url": "git://github.com/kingcody/generator-express-component.git"
+    "url": "git://github.com/yo-components/generator-express-component.git"
   },
   "scripts": {
     "test": "mocha"
@@ -23,7 +23,7 @@
   "dependencies": {
     "chalk": "^0.5.1",
     "yeoman-generator": "~0.17.0",
-    "yo-utils": "git://github.com/kingcody/yo-utils"
+    "yo-utils": "0.0.2"
   },
   "devDependencies": {
     "mocha": "~1.12.0"

@@ -1,81 +1,33 @@
 'use strict';
-var path = require('path');
-var util = require('util');
+
 var yoUtils = require('yo-utils');
+var chalk = require('chalk');
 
 
-var EndpointGenerator = module.exports = yoUtils.base.extend({
+var EndpointGenerator = yoUtils.NamedBase.extend({
 
-  /* Prompting priority methods */
-  prompting: {
-    askForUrl: function() {
-      var done = this.async();
-      var name = this.name;
+  constructor: function() {
+    yoUtils.NamedBase.apply(this, arguments);
 
-      var base = this.config.get('routesBase') || '/api/';
-      if(base.charAt(base.length-1) !== '/') {
-        base = base + '/';
+    this.hookFor('express-component:route', {
+      options: {
+        options: this._.defaults({'skip-message': true}, this.options)
       }
-
-      // pluralization defaults to true for backwards compat
-      if (this.config.get('pluralizeRoutes') !== false) {
-        name = name + 's';
+    })
+    this.hookFor('express-component:controller', {
+      options: {
+        options: this._.defaults({'skip-message': true}, this.options)
       }
-
-      var prompts = [
-        {
-          name: 'route',
-          message: 'What will the url of your endpoint to be?',
-          default: base + name
-        }
-      ];
-
-      this.prompt(prompts, function (props) {
-        if(props.route.charAt(0) !== '/') {
-          props.route = '/' + props.route;
-        }
-
-        this.route = props.route;
-        done();
-      }.bind(this));
-    }
+    });
   },
 
-  /* Writing priority methods */
-  writing: {
-    // add route and socket endpoint to main express app
-    registerEndpoint: function() {
-      if(this.config.get('insertRoutes')) {
-        var routeConfig = {
-          file: this.config.get('registerRoutesFile'),
-          needle: this.config.get('routesNeedle'),
-          splicable: [
-            "app.use(\'" + this.route +"\', require(\'./api/" + this.name + "\'));"
-          ]
-        };
-        yoUtils.templating.rewriteFile(routeConfig);
-      }
-
-      if (this.filters.socketio) {
-        if(this.config.get('insertSockets')) {
-          var socketConfig = {
-            file: this.config.get('registerSocketsFile'),
-            needle: this.config.get('socketsNeedle'),
-            splicable: [
-              "require(\'../api/" + this.name + '/' + this.name + ".socket\').register(socket);"
-            ]
-          };
-          yoUtils.templating.rewriteFile(socketConfig);
-        }
-      }
-    },
-
-    // add new endpoint files
-    createFiles: function() {
-      var dest = this.config.get('endpointDirectory') || 'server/api/' + this.name;
-      this.sourceRoot(path.join(__dirname, './templates'));
-      yoUtils.templating.processDirectory(this, '.', dest);
+  /* Init method */
+  initializing: function() {
+    if (!this.options['skip-message']) {
+      console.log(chalk.magenta('Express endpoints brought to you by generator-express-component.\n'));
     }
   }
 
 });
+
+module.exports = EndpointGenerator;
