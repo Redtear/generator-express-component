@@ -30,6 +30,16 @@ $ yo express-component
 
 You will be promted for the various configurations values needed to generate express components.
 
+Configuration:
+
+    --skip-message             # Suppress generator messages                                  Default: false
+    --force-config             # Force overwritting of previous config values                 Default: false
+    --use-defaults             # Skip all prompts and use defaults
+    --route-use-defaults       # Skip all route prompts and use defaults
+    --controller-use-defaults  # Skip all controller prompts and use defaults
+
+Also you can pass any sub-generator configuration option to use that value instead of being prompted.
+
 
 ## Usage
 
