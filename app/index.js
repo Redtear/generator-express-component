@@ -29,8 +29,7 @@ var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
     for (var i = 0, udsLength = uds.length; i < udsLength; i++) {
       var ud = uds[i];
       this.option((ud ? ud + '-' : '') + 'use-defaults', {
-        desc: 'Skip all ' + (ud ? ud + ' ' : '') + 'prompts and use defaults',
-        defaults: false
+        desc: 'Skip all ' + (ud ? ud + ' ' : '') + 'prompts and use defaults'
       });
     }
     for (var opt in routeCfg.options) {

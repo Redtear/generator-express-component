@@ -39,12 +39,12 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
       var done = this.async();
       var ops = yoUtils.app.pluckOps(/^controller-/, this.options);
       var cfg = this.config.get('controller') || {};
-      ops = _.extend(cfg, ops);
+      ops = _.merge(cfg, ops);
 
       var prompts = controllerCfg.prompts(ops);
 
       this.prompt(prompts, function(answers) {
-        this.ops = _.extend(ops, answers);
+        this.ops = _.merge(ops, answers);
         done();
       }.bind(this));
     },
@@ -82,6 +82,21 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
 
   /* Writing priority methods */
   writing: {
+    // add new controller file
+    createFiles: function() {
+      var tPath;
+      if (!this.ops.template || this.ops.template.toLowerCase() === 'default') {
+        tPath = path.join(__dirname, './templates/controller.js');
+      } else {
+        tPath = path.relative(this.sourceRoot(), this.ops.template);
+      }
+
+      this.template(tPath, this.ops.path, this);
+    }
+  },
+
+  /* End priority methods */
+  end: {
     // add controller endpoint to express route
     registerEndpoint: function() {
       if (this.ops.register) {
@@ -97,18 +112,6 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
           ]
         });
       }
-    },
-
-    // add new controller file
-    createFiles: function() {
-      var tPath;
-      if (!this.ops.template || this.ops.template.toLowerCase() === 'default') {
-        tPath = path.join(__dirname, './templates/controller.js');
-      } else {
-        tPath = path.relative(this.sourceRoot(), this.ops.template);
-      }
-
-      this.template(tPath, this.ops.path, this);
     }
   }
 

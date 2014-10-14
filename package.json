@@ -1,6 +1,6 @@
 {
   "name": "generator-express-component",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "An express component generator for Yeoman",
   "keywords": [
     "yeoman-generator"
