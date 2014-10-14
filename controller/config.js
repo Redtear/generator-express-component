@@ -16,33 +16,27 @@ var defaults = module.exports.defaults = {
 module.exports.options = {
   'controller-path': {
     desc: 'Path to use for the controller',
-    type: String,
-    defaults: defaults.path
+    type: String
   },
   'controller-register': {
     desc: 'Whether or not to register the controller',
-    type: Boolean,
-    defaults: defaults.register
+    type: Boolean
   },
   'controller-haystack': {
     desc: 'Path to file that the controller will be registered in',
-    type: String,
-    defaults: defaults.haystack
+    type: String
   },
   'controller-needle': {
     desc: 'String in file to register the controller below',
-    type: String,
-    defaults: defaults.needle
+    type: String
   },
   'controller-name': {
     desc: 'Default variable name for the controller in registered file',
-    type: String,
-    defaults: defaults.name
+    type: String
   },
   'controller-template': {
     desc: 'Path to the controller template',
-    type: String,
-    defaults: defaults.template
+    type: String
   }
 };
 
