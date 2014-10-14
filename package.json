@@ -3,7 +3,11 @@
   "version": "0.0.3",
   "description": "An express component generator for Yeoman",
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator",
+    "express",
+    "route",
+    "controller",
+    "endpoint"
   ],
   "homepage": "https://github.com/yo-components/generator-express-component",
   "bugs": "https://github.com/yo-components/generator-express-component/issues",
