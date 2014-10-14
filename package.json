@@ -23,7 +23,7 @@
   "dependencies": {
     "chalk": "^0.5.1",
     "yeoman-generator": "~0.17.0",
-    "yo-utils": "yo-components/yo-utils"
+    "yo-utils": "0.0.3"
   },
   "devDependencies": {
     "mocha": "~1.12.0"
