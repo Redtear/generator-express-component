@@ -39,12 +39,12 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
       var done = this.async();
       var ops = yoUtils.app.pluckOps(/^route-/, this.options);
       var cfg = this.config.get('route') || {};
-      ops = _.extend(cfg, ops);
+      ops = _.merge(cfg, ops);
 
       var prompts = routeCfg.prompts(ops);
 
       this.prompt(prompts, function(answers) {
-        this.ops = _.extend(ops, answers);
+        this.ops = _.merge(ops, answers);
         done();
       }.bind(this));
     },
@@ -84,6 +84,22 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
 
   /* Writing priority methods */
   writing: {
+
+    // add new route file
+    createFiles: function() {
+      var tPath;
+      if (!this.ops.template || this.ops.template.toLowerCase() === 'default') {
+        tPath = path.join(__dirname, './templates/route.js');
+      } else {
+        tPath = path.relative(this.sourceRoot(), this.ops.template);
+      }
+
+      this.template(tPath, this.ops.path, this);
+    }
+  },
+
+  /* End priority methods */
+  end: {
     // add route endpoint to express app
     registerEndpoint: function() {
       if (this.ops.register) {
@@ -98,18 +114,6 @@ var EndpointGenerator = yoUtils.NamedBase.extend({
           ]
         });
       }
-    },
-
-    // add new route file
-    createFiles: function() {
-      var tPath;
-      if (!this.ops.template || this.ops.template.toLowerCase() === 'default') {
-        tPath = path.join(__dirname, './templates/route.js');
-      } else {
-        tPath = path.relative(this.sourceRoot(), this.ops.template);
-      }
-
-      this.template(tPath, this.ops.path, this);
     }
   }
 
