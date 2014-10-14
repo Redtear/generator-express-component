@@ -17,38 +17,31 @@ var defaults = module.exports.defaults = {
 module.exports.options = {
   'route-path': {
     desc: 'Path to use for the route',
-    type: String,
-    defaults: defaults.path
+    type: String
   },
   'route-register': {
     desc: 'Whether or not to register the route',
-    type: Boolean,
-    defaults: defaults.register
+    type: Boolean
   },
   'route-haystack': {
     desc: 'Path to file that the route will be registered in',
-    type: String,
-    defaults: defaults.haystack
+    type: String
   },
   'route-needle': {
     desc: 'String in file to register the route below',
-    type: String,
-    defaults: defaults.needle
+    type: String
   },
   'route-express': {
     desc: 'The variable name of express in the registered file',
-    type: String,
-    defaults: defaults.express
+    type: String
   },
   'route-url': {
     desc: 'Default url for routes',
-    type: String,
-    defaults: defaults.url
+    type: String
   },
   'route-template': {
     desc: 'Path to the route template',
-    type: String,
-    defaults: defaults.template
+    type: String
   }
 };
 
