@@ -2,7 +2,6 @@
 var util = require('util');
 var path = require('path');
 var yoUtils = require('yo-utils');
-var yeoman = require('yeoman-generator');
 var chalk = require('chalk');
 var _;
 
@@ -11,10 +10,10 @@ var routeCfg = require('../route/config');
 var controllerCfg = require('../controller/config');
 var config = {};
 
-var ExpressComponentGenerator = module.exports = yeoman.generators.Base.extend({
+var ExpressComponentGenerator = module.exports = yoUtils.Base.extend({
 
   constructor: function() {
-    yeoman.generators.Base.apply(this, arguments);
+    yoUtils.Base.apply(this, arguments);
 
     // add usage options
     this.option('skip-message', {
