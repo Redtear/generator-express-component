@@ -26,7 +26,6 @@
   },
   "dependencies": {
     "chalk": "^0.5.1",
-    "yeoman-generator": "~0.17.0",
     "yo-utils": "0.0.3"
   },
   "devDependencies": {
